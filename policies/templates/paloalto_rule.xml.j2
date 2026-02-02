@@ -1,0 +1,62 @@
+{# ============================================================================ #}
+{# Palo Alto Security Rule Template                                            #}
+{# Author: Tamer Khalifa (CCIE #68867)                                        #}
+{# Usage: Rendered by firewall_automator.py during policy deployment           #}
+{# ============================================================================ #}
+
+<entry name="{{ rule.name }}">
+    <from>
+        {% for zone in rule.source_zone %}
+        <member>{{ zone }}</member>
+        {% endfor %}
+    </from>
+    <to>
+        {% for zone in rule.destination_zone %}
+        <member>{{ zone }}</member>
+        {% endfor %}
+    </to>
+    <source>
+        {% for addr in rule.source_address %}
+        <member>{{ addr }}</member>
+        {% endfor %}
+    </source>
+    <destination>
+        {% for addr in rule.destination_address %}
+        <member>{{ addr }}</member>
+        {% endfor %}
+    </destination>
+    <application>
+        {% for app in rule.application %}
+        <member>{{ app }}</member>
+        {% endfor %}
+    </application>
+    <service>
+        {% for svc in rule.service %}
+        <member>{{ svc }}</member>
+        {% endfor %}
+    </service>
+    <action>{{ rule.action }}</action>
+    {% if rule.log_forwarding %}
+    <log-setting>{{ rule.log_forwarding }}</log-setting>
+    {% endif %}
+    <log-start>{{ rule.log_start | default('no') }}</log-start>
+    <log-end>{{ rule.log_end | default('yes') }}</log-end>
+    {% if rule.profile_group %}
+    <profile-setting>
+        <group>
+            <member>{{ rule.profile_group }}</member>
+        </group>
+    </profile-setting>
+    {% endif %}
+    {% if rule.tag %}
+    <tag>
+        {% for t in rule.tag %}
+        <member>{{ t }}</member>
+        {% endfor %}
+    </tag>
+    {% endif %}
+    {% if rule.description %}
+    <description>{{ rule.description }}</description>
+    {% endif %}
+    <disabled>{{ rule.disabled | default('no') }}</disabled>
+</entry>

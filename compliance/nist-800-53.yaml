@@ -1,0 +1,93 @@
+# ============================================================================
+# Firewall Policy Automator - NIST 800-53 Compliance Baseline
+# Author: Tamer Khalifa (CCIE #68867)
+# Reference: NIST SP 800-53 Rev. 5
+# ============================================================================
+
+---
+standard: "NIST-800-53"
+version: "Rev.5"
+description: "NIST Special Publication 800-53 firewall security controls"
+
+rules:
+  # AC - Access Control
+  - id: "AC-4"
+    name: "Information Flow Enforcement"
+    description: "Enforce approved authorizations for controlling information flow"
+    check: "explicit_allow_rules"
+    severity: "critical"
+    remediation: "Ensure all allow rules have explicit source, destination, and service definitions"
+
+  - id: "AC-4(1)"
+    name: "Object Security Attributes"
+    description: "Use security attributes to enforce information flow policies"
+    check: "rules_use_security_zones"
+    severity: "high"
+    remediation: "All rules must reference defined security zones, not raw interfaces"
+
+  - id: "AC-17"
+    name: "Remote Access Control"
+    description: "Establish usage restrictions for remote access"
+    check: "restrict_remote_access"
+    severity: "critical"
+    remediation: "VPN and remote access rules must specify authorized source addresses"
+
+  # AU - Audit and Accountability
+  - id: "AU-3"
+    name: "Content of Audit Records"
+    description: "Generate audit records with sufficient detail"
+    check: "logging_enabled_all_rules"
+    severity: "high"
+    remediation: "Enable logging on all firewall rules (at minimum log-at-session-end)"
+
+  - id: "AU-12"
+    name: "Audit Record Generation"
+    description: "Provide audit record generation for all defined events"
+    check: "log_forwarding_configured"
+    severity: "high"
+    remediation: "Configure log forwarding profiles on all rules"
+
+  # CM - Configuration Management
+  - id: "CM-6"
+    name: "Configuration Settings"
+    description: "Establish mandatory configuration settings"
+    check: "deny_default_policy"
+    severity: "critical"
+    remediation: "Default policy must be deny-all for all zone pairs"
+
+  - id: "CM-7"
+    name: "Least Functionality"
+    description: "Configure system to provide only essential capabilities"
+    check: "no_overly_permissive_rules"
+    severity: "critical"
+    remediation: "Remove rules with service 'any' or application 'any' in allow rules"
+
+  # SC - System and Communications Protection
+  - id: "SC-7"
+    name: "Boundary Protection"
+    description: "Monitor and control communications at external boundaries"
+    check: "boundary_rules_defined"
+    severity: "critical"
+    remediation: "Ensure external boundary zones have explicit ingress and egress rules"
+
+  - id: "SC-7(5)"
+    name: "Deny by Default / Allow by Exception"
+    description: "Deny network traffic by default, allow by exception"
+    check: "implicit_deny_last"
+    severity: "critical"
+    remediation: "Verify implicit deny rule exists at the end of each rulebase"
+
+  - id: "SC-7(8)"
+    name: "Route Traffic to Authenticated Proxy"
+    description: "Route internal traffic to external networks through proxies"
+    check: "outbound_via_proxy"
+    severity: "high"
+    remediation: "Ensure outbound web traffic routes through authenticated proxy"
+
+  # SI - System and Information Integrity
+  - id: "SI-4"
+    name: "System Monitoring"
+    description: "Monitor the system to detect attacks and unauthorized connections"
+    check: "ids_ips_profiles_applied"
+    severity: "high"
+    remediation: "Apply IDS/IPS security profiles to all allow rules"

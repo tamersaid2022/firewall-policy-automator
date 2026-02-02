@@ -1,0 +1,33 @@
+{# ============================================================================ #}
+{# FortiGate Firewall Policy Template                                          #}
+{# Author: Tamer Khalifa (CCIE #68867)                                        #}
+{# Usage: Rendered by firewall_automator.py during policy deployment           #}
+{# ============================================================================ #}
+
+config firewall policy
+    edit {{ rule.policy_id | default(0) }}
+        set name "{{ rule.name }}"
+        set srcintf "{{ rule.source_zone }}"
+        set dstintf "{{ rule.destination_zone }}"
+        {% for addr in rule.source_address %}
+        set srcaddr "{{ addr }}"
+        {% endfor %}
+        {% for addr in rule.destination_address %}
+        set dstaddr "{{ addr }}"
+        {% endfor %}
+        set action {{ rule.action }}
+        set schedule "always"
+        {% for svc in rule.service %}
+        set service "{{ svc }}"
+        {% endfor %}
+        {% if rule.action == 'accept' %}
+        set logtraffic all
+        {% else %}
+        set logtraffic utm
+        {% endif %}
+        {% if rule.comment %}
+        set comments "{{ rule.comment }}"
+        {% endif %}
+        set status {{ 'disable' if rule.disabled else 'enable' }}
+    next
+end

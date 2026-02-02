@@ -1,0 +1,64 @@
+# ============================================================================
+# Production Policy - Web Server Access
+# Author: Tamer Khalifa (CCIE #68867)
+# Target: pa-fw-01
+# ============================================================================
+
+---
+policy_name: "Web-Server-Access"
+description: "Allow web traffic to DMZ servers"
+target_firewalls:
+  - "pa-fw-01"
+
+rules:
+  - name: "Allow-HTTPS-to-WebServers"
+    source_zone: "trust"
+    destination_zone: "dmz"
+    source_address:
+      - "10.0.0.0/8"
+    destination_address:
+      - "172.16.1.10"
+      - "172.16.1.11"
+    application:
+      - "ssl"
+      - "web-browsing"
+    service:
+      - "tcp/443"
+      - "tcp/80"
+    action: "allow"
+    log_forwarding: "default"
+    profile_group: "strict-security"
+    tag:
+      - "web-access"
+      - "automated"
+      - "pci-scope"
+
+  - name: "Allow-DNS-to-DMZ"
+    source_zone: "trust"
+    destination_zone: "dmz"
+    source_address:
+      - "any"
+    destination_address:
+      - "172.16.1.5"
+    application:
+      - "dns"
+    service:
+      - "udp/53"
+    action: "allow"
+    log_forwarding: "default"
+
+  - name: "Deny-All-DMZ-Cleanup"
+    source_zone: "any"
+    destination_zone: "dmz"
+    source_address:
+      - "any"
+    destination_address:
+      - "any"
+    application:
+      - "any"
+    service:
+      - "any"
+    action: "deny"
+    log_forwarding: "default"
+    tag:
+      - "cleanup-rule"

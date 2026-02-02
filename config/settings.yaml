@@ -1,0 +1,57 @@
+# ============================================================================
+# Firewall Policy Automator - Connection Settings
+# Author: Tamer Khalifa (CCIE #68867)
+# ============================================================================
+
+---
+firewalls:
+  # ── Palo Alto Firewalls ─────────────────────────────────────
+  paloalto:
+    - name: "pa-fw-01"
+      host: "192.168.1.100"
+      api_key: "${PA_API_KEY}"
+      verify_ssl: true
+      device_group: "Shared"           # For Panorama
+
+    - name: "pa-fw-02"
+      host: "192.168.1.101"
+      api_key: "${PA_API_KEY}"
+      verify_ssl: true
+
+  # ── FortiGate Firewalls ─────────────────────────────────────
+  fortigate:
+    - name: "fg-fw-01"
+      host: "192.168.2.100"
+      api_key: "${FG_API_KEY}"
+      verify_ssl: true
+      vdom: "root"
+
+# ── Deployment Settings ────────────────────────────────────────
+deployment:
+  backup_before_deploy: true
+  validate_before_deploy: true
+  auto_commit: false
+  rollback_on_failure: true
+  dry_run: false
+  max_retries: 3
+  timeout: 60
+
+# ── Logging ────────────────────────────────────────────────────
+logging:
+  level: "INFO"
+  file: "logs/firewall_automator.log"
+  max_size_mb: 10
+  backup_count: 5
+
+# ── Notifications ──────────────────────────────────────────────
+notifications:
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK}"
+    channel: "#firewall-changes"
+  email:
+    enabled: false
+    smtp_server: "smtp.company.com"
+    recipients:
+      - "netops@company.com"
+      - "security@company.com"

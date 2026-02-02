@@ -1,0 +1,85 @@
+# ============================================================================
+# Firewall Policy Automator - PCI-DSS Compliance Baseline
+# Author: Tamer Khalifa (CCIE #68867)
+# Reference: PCI DSS v4.0
+# ============================================================================
+
+---
+standard: "PCI-DSS"
+version: "4.0"
+description: "Payment Card Industry Data Security Standard firewall compliance checks"
+
+rules:
+  # Requirement 1: Install and Maintain Network Security Controls
+  - id: "PCI-1.2.1"
+    name: "Restrict inbound traffic to CDE"
+    description: "Inbound traffic to cardholder data environment must be restricted to necessary communications"
+    check: "deny_all_default"
+    severity: "critical"
+    remediation: "Ensure a deny-all rule exists at the bottom of the CDE rulebase"
+
+  - id: "PCI-1.2.5"
+    name: "No any-any-permit rules"
+    description: "Rules must not allow any-any-any-permit configurations"
+    check: "no_any_any_permit"
+    severity: "critical"
+    remediation: "Remove or narrow overly permissive rules"
+
+  - id: "PCI-1.2.6"
+    name: "No unused rules"
+    description: "Rules that have not matched traffic in 90+ days should be reviewed"
+    check: "no_unused_rules"
+    threshold_days: 90
+    severity: "high"
+    remediation: "Review and disable or remove rules with zero hit counts for 90+ days"
+
+  - id: "PCI-1.3.1"
+    name: "Restrict inbound to DMZ only"
+    description: "Inbound Internet traffic should be limited to the DMZ"
+    check: "inbound_dmz_only"
+    severity: "critical"
+    remediation: "Ensure Internet-sourced traffic only reaches DMZ, not internal zones"
+
+  - id: "PCI-1.3.2"
+    name: "Restrict outbound CDE traffic"
+    description: "Outbound traffic from CDE must be explicitly authorized"
+    check: "restrict_cde_outbound"
+    severity: "critical"
+    remediation: "Ensure outbound CDE traffic is limited to required destinations only"
+
+  - id: "PCI-1.4.1"
+    name: "No direct public-to-CDE routes"
+    description: "No direct connections between public networks and CDE"
+    check: "no_direct_public_cde"
+    severity: "critical"
+    remediation: "Ensure all CDE access traverses the DMZ or proxy"
+
+  # Requirement 1.3.4: Personal firewall on portable devices
+  - id: "PCI-1.3.4"
+    name: "Log denied traffic"
+    description: "Denied traffic must be logged"
+    check: "log_denied"
+    severity: "high"
+    remediation: "Enable logging on all deny rules"
+
+  # Rule hygiene
+  - id: "PCI-HYGIENE-1"
+    name: "Rules must have descriptions"
+    description: "Every rule should have a meaningful description"
+    check: "rules_have_descriptions"
+    severity: "medium"
+    remediation: "Add descriptions to all firewall rules documenting business justification"
+
+  - id: "PCI-HYGIENE-2"
+    name: "Rules must have owner tags"
+    description: "Rules should be tagged with an owner for accountability"
+    check: "rules_have_owner_tags"
+    severity: "medium"
+    remediation: "Tag each rule with an owner (team or individual)"
+
+  - id: "PCI-HYGIENE-3"
+    name: "No disabled rules in production"
+    description: "Disabled rules should be removed from production policy"
+    check: "no_disabled_rules"
+    severity: "low"
+    remediation: "Remove disabled rules or document reason for keeping them disabled"
